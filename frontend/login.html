@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forge3D – Log In</title>
+<meta name="description" content="Log in to Forge3D, the professional 3D asset management pipeline."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: { extend: {
+      colors: {
+        "surface-container": "#201f1f", "surface-container-low": "#1c1b1b",
+        "primary-container": "#4d8eff", "surface-container-high": "#2a2a2a",
+        "surface-container-highest": "#353534", "surface-container-lowest": "#0e0e0e",
+        "primary": "#adc6ff", "on-surface": "#e5e2e1", "outline-variant": "#424754",
+        "surface-variant": "#353534", "on-background": "#e5e2e1", "outline": "#8c909f",
+        "on-surface-variant": "#c2c6d6", "surface-dim": "#131313", "background": "#131313",
+        "surface": "#131313", "error": "#ffb4ab", "blue-500": "#3B82F6",
+        "zinc-800": "#2D2D2D", "zinc-900": "#1E1E1E", "zinc-950": "#121212"
+      },
+      borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+      spacing: { "md": "16px", "xs": "4px", "lg": "24px", "xl": "32px", "sm": "8px", "base": "8px", "gutter": "16px" },
+      fontFamily: { "body-sm": ["Inter"], "label-sm": ["Inter"], "body-md": ["Inter"], "label-md": ["Inter"], "code": ["monospace"], "h1": ["Inter"], "h2": ["Inter"], "h3": ["Inter"], "body-lg": ["Inter"] },
+      fontSize: {
+        "body-sm":  ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+        "body-md":  ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+        "code":     ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+        "h1":       ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+        "h2":       ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+        "h3":       ["16px", {"lineHeight": "24px", "fontWeight": "600"}]
+      }
+    }}
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  body { background-color: #121212; color: #e5e2e1; min-height: max(884px, 100dvh); }
+  .shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)}
+  }
+</style>
+</head>
+<body class="bg-zinc-950 flex items-center justify-center min-h-screen font-body-md text-on-background selection:bg-blue-500/30">
+
+<!-- Grid background -->
+<div class="fixed inset-0 z-0 opacity-20 pointer-events-none">
+  <div class="absolute inset-0 bg-[radial-gradient(#2D2D2D_1px,transparent_1px)] [background-size:32px_32px]"></div>
+</div>
+
+<main class="relative z-10 w-full max-w-[400px] px-lg">
+  <!-- Logo -->
+  <div class="flex flex-col items-center mb-xl">
+    <div class="mb-md">
+      <span class="material-symbols-outlined text-blue-500 !text-[48px]">deployed_code</span>
+    </div>
+    <h1 class="font-h1 text-h1 tracking-tighter text-blue-500 uppercase">Forge3D</h1>
+    <p class="font-label-sm text-label-sm text-zinc-400 mt-xs tracking-widest uppercase">Professional Asset Pipeline</p>
+  </div>
+
+  <!-- Error banner -->
+  <div id="error-banner" class="hidden mb-lg bg-red-900/40 border border-red-700/50 text-red-300 px-md py-sm font-body-sm text-body-sm flex items-center gap-sm">
+    <span class="material-symbols-outlined text-sm">error</span>
+    <span id="error-msg"></span>
+  </div>
+
+  <!-- Login Card -->
+  <div class="bg-zinc-900 border border-zinc-800 p-xl shadow-2xl">
+    <form id="login-form" class="space-y-lg" novalidate>
+      <!-- Email -->
+      <div class="space-y-xs">
+        <label class="font-label-md text-label-md text-zinc-400 block" for="email">EMAIL ADDRESS</label>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-blue-500">alternate_email</span>
+          <input class="w-full h-12 bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:ring-0 text-body-md pl-[44px] pr-md py-xl transition-colors placeholder:text-zinc-600"
+            id="email" name="email" placeholder="user@studio.com" required type="email" autocomplete="email"/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="space-y-xs">
+        <div class="flex justify-between items-end">
+          <label class="font-label-md text-label-md text-zinc-400 block" for="password">PASSWORD</label>
+          <a class="font-label-sm text-label-sm text-blue-500 hover:text-blue-400 transition-colors" href="#">Forgot Password?</a>
+        </div>
+        <div class="relative group">
+          <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-blue-500">lock</span>
+          <input class="w-full h-12 bg-zinc-950 border border-zinc-800 focus:border-blue-500 focus:ring-0 text-body-md pl-[44px] pr-md py-xl transition-colors placeholder:text-zinc-600"
+            id="password" name="password" placeholder="••••••••" required type="password" autocomplete="current-password"/>
+        </div>
+      </div>
+
+      <!-- Remember me -->
+      <div class="flex items-center space-x-sm">
+        <input class="w-4 h-4 bg-zinc-950 border-zinc-800 text-blue-500 rounded-xs focus:ring-0 focus:ring-offset-0 cursor-pointer"
+          id="remember" name="remember" type="checkbox"/>
+        <label class="font-body-sm text-body-sm text-zinc-400 cursor-pointer select-none" for="remember">Keep me logged in</label>
+      </div>
+
+      <!-- Submit -->
+      <button id="login-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-label-md text-label-md py-md transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500/50 uppercase tracking-wider disabled:opacity-60 disabled:cursor-not-allowed h-12 flex items-center justify-center gap-sm" type="submit">
+        <span id="btn-text">Log In</span>
+        <span id="btn-spinner" class="hidden material-symbols-outlined animate-spin !text-base">progress_activity</span>
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="relative my-xl">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-zinc-800"></div></div>
+      <div class="relative flex justify-center text-label-sm"><span class="px-md bg-zinc-900 text-zinc-500">OR</span></div>
+    </div>
+
+    <!-- SSO -->
+    <button class="w-full border border-zinc-800 hover:bg-zinc-800 text-zinc-300 font-label-md text-label-md py-md transition-colors flex items-center justify-center space-x-sm uppercase tracking-wider">
+      <span class="material-symbols-outlined !text-base">key</span>
+      <span>SSO Enterprise Login</span>
+    </button>
+  </div>
+
+  <!-- Create account -->
+  <div class="mt-xl text-center">
+    <p class="font-body-sm text-body-sm text-zinc-500">
+      Don't have an account?
+      <a class="text-blue-500 font-semibold hover:underline decoration-blue-500/30 underline-offset-4" href="signup.html">Create an account</a>
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-xl flex justify-center space-x-lg text-zinc-600 font-label-sm text-label-sm">
+    <a class="hover:text-zinc-400 transition-colors" href="#">Privacy</a>
+    <span>v2.4.0-stable</span>
+  </footer>
+</main>
+
+<!-- Decorative corner text -->
+<div class="fixed right-0 bottom-0 p-xl opacity-10 pointer-events-none hidden lg:block">
+  <div class="text-right">
+    <p class="font-code text-code text-blue-500 mb-xs">INITIALIZING_CORE_SYSTEMS</p>
+    <p class="font-code text-code">LOADING_PIPELINE_ASSETS... [OK]</p>
+    <p class="font-code text-code">CONNECTING_TO_NODES... [OK]</p>
+    <p class="font-code text-code">ENCRYPTING_SESSION... [OK]</p>
+  </div>
+</div>
+
+<script type="module">
+  // Redirect if already logged in
+  if (localStorage.getItem("forge3d_token")) {
+    window.location.href = "dashboard.html";
+  }
+
+  const API_BASE = window.FORGE3D_API_BASE || "http://localhost:5000/api";
+  const form     = document.getElementById("login-form");
+  const btn      = document.getElementById("login-btn");
+  const btnText  = document.getElementById("btn-text");
+  const spinner  = document.getElementById("btn-spinner");
+  const errBanner= document.getElementById("error-banner");
+  const errMsg   = document.getElementById("error-msg");
+
+  function showError(msg) {
+    errMsg.textContent = msg;
+    errBanner.classList.remove("hidden");
+    form.classList.add("shake");
+    setTimeout(() => form.classList.remove("shake"), 500);
+  }
+
+  function setLoading(loading) {
+    btn.disabled = loading;
+    btnText.textContent = loading ? "Logging in…" : "Log In";
+    spinner.classList.toggle("hidden", !loading);
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errBanner.classList.add("hidden");
+
+    const email    = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      showError("Please fill in all fields.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed.");
+
+      localStorage.setItem("forge3d_token", data.token);
+      localStorage.setItem("forge3d_user", JSON.stringify(data.user));
+      window.location.href = "dashboard.html";
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  });
+</script>
+</body>
+</html>

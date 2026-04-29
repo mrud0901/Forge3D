@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forge3D – 3D Viewer</title>
+<meta name="description" content="View and manage 3D assets for your Forge3D project."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"background":"#131313","on-surface":"#e5e2e1","outline-variant":"#424754","on-surface-variant":"#c2c6d6","surface-container":"#201f1f","surface-container-lowest":"#0e0e0e"},
+    spacing:{"md":"16px","xs":"4px","lg":"24px","xl":"32px","sm":"8px","sidebar_width":"260px"},
+    fontFamily:{"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"h1":["Inter"],"h2":["Inter"],"h3":["Inter"],"code":["monospace"]},
+    fontSize:{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"500"}],"h1":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"600"}],"h3":["16px",{"lineHeight":"24px","fontWeight":"600"}],"code":["12px",{"lineHeight":"16px","fontWeight":"400"}]}
+  }}}
+</script>
+<style>
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  body{background-color:#121212;color:#e5e2e1;font-family:'Inter',sans-serif;min-height:100dvh;}
+  .custom-scrollbar::-webkit-scrollbar{width:4px;}
+  .custom-scrollbar::-webkit-scrollbar-track{background:#121212;}
+  .custom-scrollbar::-webkit-scrollbar-thumb{background:#2D2D2D;border-radius:2px;}
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover{background:#3B82F6;}
+  .drop-active{border-color:#3B82F6!important;background:rgba(59,130,246,0.05);}
+</style>
+</head>
+<body class="font-body-md bg-background text-on-background overflow-hidden">
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col w-[260px] bg-zinc-900 border-r border-zinc-800 z-50"></aside>
+
+<!-- Topbar -->
+<header id="topbar" class="fixed top-0 right-0 left-[260px] h-14 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between px-6 z-40">
+  <div class="flex items-center gap-3">
+    <a href="projects.html" class="text-zinc-500 hover:text-white transition-colors">
+      <span class="material-symbols-outlined text-sm">arrow_back</span>
+    </a>
+    <h1 id="project-title" class="font-inter text-base font-semibold text-on-surface">Loading…</h1>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="font-label-sm text-zinc-500 uppercase tracking-widest" id="asset-count">– assets</span>
+  </div>
+</header>
+
+<!-- Main canvas -->
+<main class="fixed top-14 left-[260px] right-0 bottom-0 flex bg-background">
+
+  <!-- 3D Viewer area -->
+  <section class="flex-1 relative bg-[#0e0e0e] overflow-hidden border-r border-[#2D2D2D]">
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image:radial-gradient(#2D2D2D 1px,transparent 1px);background-size:24px 24px;"></div>
+    <div class="absolute inset-0 flex items-center justify-center" id="viewer-empty">
+      <div class="flex flex-col items-center">
+        <span class="material-symbols-outlined text-[120px] text-zinc-800">view_in_ar</span>
+        <p class="mt-4 font-label-md text-zinc-600 tracking-widest uppercase">SELECT ASSET TO VIEW</p>
+      </div>
+    </div>
+    <!-- Placeholder for actual 3D renderer -->
+    <div id="viewer-content" class="hidden absolute inset-0 flex flex-col items-center justify-center">
+      <model-viewer id="model-preview" class="w-full h-full hidden" camera-controls auto-rotate shadow-intensity="1" exposure="1" environment-image="neutral" alt="A 3D model"></model-viewer>
+      
+      <div id="viewer-fallback" class="text-center absolute inset-0 flex flex-col items-center justify-center bg-background z-10">
+        <span class="material-symbols-outlined text-[80px] text-zinc-600">deployed_code</span>
+        <p id="selected-filename" class="mt-4 font-label-md text-zinc-400"></p>
+        <p class="mt-2 font-label-sm text-zinc-600 max-w-xs">3D Web preview is only available for .GLB and .GLTF formats. Please download to view.</p>
+        <a id="asset-download-link" href="#" target="_blank" class="mt-6 inline-flex items-center gap-2 bg-blue-500 text-white px-4 py-2 font-label-md hover:bg-blue-600 transition-colors">
+          <span class="material-symbols-outlined text-sm">download</span>
+          Download File
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add model-viewer script to the end of body later, or here in head -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <!-- Asset panel -->
+  <section class="w-full md:w-[360px] bg-[#1E1E1E] flex flex-col h-full overflow-hidden">
+
+    <!-- Upload drop zone -->
+    <div class="p-4 border-b border-[#2D2D2D]">
+      <div id="drop-zone" class="border-2 border-dashed border-[#2D2D2D] p-6 flex flex-col items-center justify-center hover:border-blue-500 transition-colors cursor-pointer group">
+        <span class="material-symbols-outlined text-zinc-500 group-hover:text-blue-500 mb-2">upload_file</span>
+        <span class="font-label-md text-zinc-400">DROP FILES OR <span class="text-blue-500">BROWSE</span></span>
+        <span class="font-label-sm text-zinc-600 mt-1 uppercase">MAX 50MB (.GLB, .OBJ, .USDZ, .ZIP, .RAR, .STL…)</span>
+        <input id="file-input" type="file" class="hidden" accept=".glb,.gltf,.obj,.fbx,.usd,.usda,.usdz,.abc,.blend,.zip,.rar,.stl,.dae,.3ds,.step,.stp"/>
+      </div>
+      <!-- Upload progress -->
+      <div id="upload-progress" class="hidden mt-3">
+        <div class="flex justify-between font-label-sm text-zinc-400 mb-1">
+          <span id="uploading-filename">Uploading…</span>
+          <span id="upload-pct">0%</span>
+        </div>
+        <div class="w-full bg-zinc-800 h-1">
+          <div id="upload-bar" class="bg-blue-500 h-full transition-all" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asset list header -->
+    <div class="px-4 py-2 bg-[#121212] border-b border-[#2D2D2D] flex justify-between items-center">
+      <span class="font-label-sm text-zinc-500 uppercase tracking-widest">LOCAL_ASSETS</span>
+      <div class="flex space-x-2">
+        <span class="material-symbols-outlined text-sm text-zinc-500">filter_list</span>
+        <span class="material-symbols-outlined text-sm text-zinc-500">sort_by_alpha</span>
+      </div>
+    </div>
+
+    <!-- Asset list -->
+    <div id="asset-list" class="flex-1 overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-center py-12 text-zinc-600 font-label-sm">
+        <span class="material-symbols-outlined animate-spin mr-2">progress_activity</span> Loading assets…
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-4 py-3 bg-[#121212] border-t border-[#2D2D2D] flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+        <span class="font-label-sm text-zinc-400">ENGINE_READY</span>
+      </div>
+      <span id="footer-count" class="font-label-sm text-zinc-600">0 ASSETS TOTAL</span>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+  import { renderSidebar, authFetch, showToast, requireAuth } from "./js/app.js";
+  renderSidebar("projects.html");
+  requireAuth();
+
+  const params    = new URLSearchParams(location.search);
+  const projectId = params.get("project");
+  if (!projectId) { window.location.href = "projects.html"; }
+
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const API_BASE = window.FORGE3D_API_BASE || (isLocal ? "http://localhost:5000/api" : "/api");
+  let   assets   = [];
+
+  // ── Load project assets ────────────────────────────────────────────────────
+  async function loadAssets() {
+    try {
+      const { assets: list } = await authFetch(`/projects/${projectId}/assets`);
+      assets = list;
+
+      document.getElementById("asset-count").textContent = `${list.length} assets`;
+      document.getElementById("footer-count").textContent = `${list.length} ASSETS TOTAL`;
+
+      const assetList = document.getElementById("asset-list");
+      if (list.length === 0) {
+        assetList.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-12 text-zinc-600">
+            <span class="material-symbols-outlined text-4xl mb-2">cloud_upload</span>
+            <p class="font-label-sm uppercase">No assets yet. Upload your first file.</p>
+          </div>`;
+        return;
+      }
+
+      assetList.innerHTML = list.map(a => `
+        <div class="asset-row flex items-center px-4 py-3 border-b border-[#2D2D2D] hover:bg-[#2D2D2D] transition-colors cursor-pointer group" data-id="${a.id}" data-url="${a.file_url}" data-name="${a.filename}">
+          <div class="w-10 h-10 bg-[#121212] border border-[#2D2D2D] flex items-center justify-center mr-4">
+            <span class="material-symbols-outlined text-zinc-500">${iconForFile(a.filename)}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-label-md text-on-surface truncate">${a.filename}</p>
+            <div class="flex items-center space-x-3 mt-0.5">
+              <span class="bg-[#121212] text-blue-400 px-1.5 py-0.5 font-label-sm text-[9px] border border-[#2D2D2D]">${extOf(a.filename)}</span>
+              <span class="font-label-sm text-zinc-500">${new Date(a.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+          <button class="delete-asset-btn text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400" data-id="${a.id}" data-name="${a.filename}">
+            <span class="material-symbols-outlined text-sm">delete</span>
+          </button>
+        </div>`).join("");
+
+      // Click to select
+      assetList.querySelectorAll(".asset-row").forEach(row => {
+        row.addEventListener("click", (e) => {
+          if (e.target.closest(".delete-asset-btn")) return;
+          selectAsset(row.dataset.url, row.dataset.name);
+        });
+      });
+
+      // Delete buttons
+      assetList.querySelectorAll(".delete-asset-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          deleteAsset(btn.dataset.id, btn.dataset.name);
+        });
+      });
+
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  }
+
+  // ── Also load project name ─────────────────────────────────────────────────
+  async function loadProjectName() {
+    try {
+      const { projects } = await authFetch("/projects?limit=200");
+      const p = projects.find(x => x.id === projectId);
+      if (p) document.getElementById("project-title").textContent = p.name;
+    } catch {}
+  }
+
+  function iconForFile(name) {
+    const ext = extOf(name).toLowerCase();
+    if ([".glb",".gltf",".obj",".fbx",".usdz",".usd",".abc",".blend"].includes(ext)) return "deployed_code";
+    if ([".png",".jpg",".jpeg",".exr"].includes(ext)) return "image";
+    if ([".mtl",".mtlx"].includes(ext)) return "texture";
+    if ([".zip",".rar"].includes(ext)) return "folder_zip";
+    return "insert_drive_file";
+  }
+  function extOf(name) {
+    const p = name.lastIndexOf(".");
+    return p >= 0 ? name.slice(p).toUpperCase() : "";
+  }
+
+  function selectAsset(url, name) {
+    document.getElementById("viewer-empty").classList.add("hidden");
+    document.getElementById("viewer-content").classList.remove("hidden");
+    
+    const ext = extOf(name).toLowerCase();
+    const modelPreview = document.getElementById("model-preview");
+    const viewerFallback = document.getElementById("viewer-fallback");
+    
+    if (ext === ".glb" || ext === ".gltf") {
+      modelPreview.src = url;
+      modelPreview.classList.remove("hidden");
+      viewerFallback.classList.add("hidden");
+    } else {
+      modelPreview.classList.add("hidden");
+      modelPreview.src = "";
+      viewerFallback.classList.remove("hidden");
+      document.getElementById("selected-filename").textContent = name;
+      document.getElementById("asset-download-link").href = url;
+    }
+  }
+
+  // ── Delete asset ───────────────────────────────────────────────────────────
+  async function deleteAsset(id, name) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      await authFetch(`/assets/${id}`, { method: "DELETE" });
+      showToast("Asset deleted.", "success");
+      await loadAssets();
+    } catch (err) { showToast(err.message, "error"); }
+  }
+
+  // ── Upload flow ────────────────────────────────────────────────────────────
+  const dropZone    = document.getElementById("drop-zone");
+  const fileInput   = document.getElementById("file-input");
+  const progressEl  = document.getElementById("upload-progress");
+  const progressBar = document.getElementById("upload-bar");
+  const progressPct = document.getElementById("upload-pct");
+  const uploadName  = document.getElementById("uploading-filename");
+
+  dropZone.addEventListener("click", () => fileInput.click());
+  dropZone.addEventListener("dragover", (e) => { e.preventDefault(); dropZone.classList.add("drop-active"); });
+  dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drop-active"));
+  dropZone.addEventListener("drop", (e) => { e.preventDefault(); dropZone.classList.remove("drop-active"); handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener("change", () => handleFiles(fileInput.files));
+
+  async function handleFiles(files) {
+    if (!files.length) return;
+    const file = files[0];
+    uploadName.textContent = file.name;
+    progressEl.classList.remove("hidden");
+    progressBar.style.width = "0%";
+    progressPct.textContent = "0%";
+
+    try {
+      // Step 1: get signed URL
+      const { upload_url, file_url } = await authFetch("/upload-url", {
+        method: "POST",
+        body: JSON.stringify({ filename: file.name, project_id: projectId, content_type: file.type || "application/octet-stream" }),
+      });
+
+      // Step 2: XHR upload with progress
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", upload_url);
+        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressBar.style.width = pct + "%";
+            progressPct.textContent = pct + "%";
+          }
+        };
+        xhr.onload  = () => {
+          if (xhr.status < 300) {
+            resolve();
+          } else {
+            let msg = `Upload HTTP ${xhr.status}`;
+            try {
+              const err = JSON.parse(xhr.responseText);
+              if (err.message || err.error) msg += `: ${err.message || err.error}`;
+            } catch (e) {
+              msg += ` - ${xhr.responseText}`;
+            }
+            reject(new Error(msg));
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error."));
+        xhr.send(file);
+      });
+
+      // Step 3: Save metadata
+      await authFetch("/assets", {
+        method: "POST",
+        body: JSON.stringify({ project_id: projectId, file_url, filename: file.name }),
+      });
+
+      showToast(`"${file.name}" uploaded!`, "success");
+      await loadAssets();
+    } catch (err) {
+      showToast(err.message, "error");
+    } finally {
+      progressEl.classList.add("hidden");
+      fileInput.value = "";
+    }
+  }
+
+  loadProjectName();
+  loadAssets();
+</script>
+</body>
+</html>

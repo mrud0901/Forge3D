@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forge3D – Activity</title>
+<meta name="description" content="View your recent activity."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode:"class",
+    theme:{extend:{
+      colors:{"surface-container":"#201f1f","surface-container-low":"#1c1b1b","primary-container":"#4d8eff","surface-container-high":"#2a2a2a","surface-container-highest":"#353534","surface-container-lowest":"#0e0e0e","primary":"#adc6ff","on-surface":"#e5e2e1","outline-variant":"#424754","surface-variant":"#353534","on-background":"#e5e2e1","outline":"#8c909f","on-surface-variant":"#c2c6d6","surface-dim":"#131313","background":"#131313","surface":"#131313"},
+      spacing:{"md":"16px","xs":"4px","lg":"24px","xl":"32px","sm":"8px","sidebar_width":"260px"},
+      fontFamily:{"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"code":["monospace"],"h1":["Inter"],"h2":["Inter"],"h3":["Inter"]},
+      fontSize:{
+        "body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],
+        "label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"600"}],
+        "body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],
+        "label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"500"}],
+        "code":["12px",{"lineHeight":"16px","fontWeight":"400"}],
+        "h1":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"600"}],
+        "h2":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],
+        "h3":["16px",{"lineHeight":"24px","fontWeight":"600"}]
+      }
+    }}
+  }
+</script>
+<style>
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  body{background-color:#131313;color:#e5e2e1;font-family:'Inter',sans-serif;min-height:100dvh;}
+</style>
+</head>
+<body class="flex min-h-screen">
+
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col w-[260px] bg-zinc-900 border-r border-zinc-800 z-50"></aside>
+
+<!-- Main content -->
+<div class="flex-1 ml-[260px] flex flex-col min-h-screen">
+  <!-- Topbar -->
+  <header id="topbar" class="flex items-center justify-between px-6 h-14 bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40"></header>
+
+  <!-- Canvas -->
+  <main class="flex-1 p-8 space-y-8 bg-zinc-950 flex flex-col items-center justify-center text-zinc-500">
+    <span class="material-symbols-outlined text-6xl mb-4 text-zinc-700">history</span>
+    <h2 class="font-h2 text-on-surface">Activity Log</h2>
+    <p class="font-body-md text-zinc-400">Your recent activity will appear here. This feature is under construction.</p>
+  </main>
+</div>
+
+<script type="module">
+  import { renderSidebar, renderTopbar } from "./js/app.js";
+
+  renderSidebar("activity.html");
+  renderTopbar("Activity");
+</script>
+</body>
+</html>

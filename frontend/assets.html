@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forge3D – Asset Library</title>
+<meta name="description" content="Browse and manage all your 3D assets across projects in Forge3D."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"background":"#131313","on-surface":"#e5e2e1","outline-variant":"#424754","on-surface-variant":"#c2c6d6","surface-container-lowest":"#0e0e0e","surface-container":"#201f1f"},
+    spacing:{"md":"16px","xs":"4px","lg":"24px","xl":"32px","sm":"8px"},
+    fontFamily:{"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"h1":["Inter"],"h2":["Inter"],"h3":["Inter"],"code":["monospace"]},
+    fontSize:{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"500"}],"h2":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"h3":["16px",{"lineHeight":"24px","fontWeight":"600"}],"code":["12px",{"lineHeight":"16px","fontWeight":"400"}]}
+  }}}
+</script>
+<style>
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  body{background-color:#121212;color:#e5e2e1;font-family:'Inter',sans-serif;min-height:100dvh;}
+  .custom-scrollbar::-webkit-scrollbar{width:4px;} .custom-scrollbar::-webkit-scrollbar-track{background:#121212;} .custom-scrollbar::-webkit-scrollbar-thumb{background:#2d2d2d;}
+</style>
+</head>
+<body class="bg-background text-on-background selection:bg-blue-500/30">
+
+<nav id="sidebar" class="fixed left-0 top-0 h-full flex flex-col w-[260px] bg-zinc-900 border-r border-zinc-800 z-50"></nav>
+
+<header class="flex items-center justify-between px-6 ml-[260px] w-[calc(100%-260px)] h-14 bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40">
+  <div class="flex items-center gap-4">
+    <h1 class="font-inter text-lg font-semibold text-on-surface">Asset Library</h1>
+  </div>
+  <div class="flex items-center gap-4">
+    <div class="relative flex items-center">
+      <span class="material-symbols-outlined absolute left-3 text-zinc-500 text-sm">search</span>
+      <input id="search-input" class="bg-zinc-900 border border-zinc-800 rounded-lg pl-9 pr-4 py-1.5 text-sm w-64 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" placeholder="Search assets…" type="text"/>
+    </div>
+  </div>
+</header>
+
+<main class="ml-[260px] p-6 bg-background min-h-screen">
+  <!-- Project filter -->
+  <div class="mb-4">
+    <label class="font-label-sm text-zinc-500 uppercase block mb-2">Filter by Project</label>
+    <select id="project-filter" class="bg-zinc-900 border border-zinc-800 text-zinc-300 px-3 py-1.5 text-sm focus:border-blue-500 outline-none">
+      <option value="">All Projects</option>
+    </select>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center gap-2">
+      <button class="filter-btn active px-4 py-1.5 bg-zinc-800 text-white rounded-full text-xs font-semibold border border-zinc-700" data-ext="">All Assets</button>
+      <button class="filter-btn px-4 py-1.5 bg-transparent text-zinc-400 hover:bg-zinc-800/50 rounded-full text-xs font-semibold border border-transparent" data-ext=".glb,.gltf,.obj,.fbx,.usd,.usda,.usdz,.abc,.blend">Models</button>
+      <button class="filter-btn px-4 py-1.5 bg-transparent text-zinc-400 hover:bg-zinc-800/50 rounded-full text-xs font-semibold border border-transparent" data-ext=".png,.jpg,.jpeg,.exr">Textures</button>
+      <button class="filter-btn px-4 py-1.5 bg-transparent text-zinc-400 hover:bg-zinc-800/50 rounded-full text-xs font-semibold border border-transparent" data-ext=".mtl,.mtlx">Materials</button>
+    </div>
+    <span id="asset-total" class="font-label-sm text-zinc-500">Loading…</span>
+  </div>
+
+  <!-- Grid -->
+  <div id="asset-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+    <div class="col-span-full flex items-center justify-center py-16 text-zinc-600 font-label-sm">
+      <span class="material-symbols-outlined animate-spin mr-2">progress_activity</span> Loading assets…
+    </div>
+  </div>
+</main>
+
+<!-- Right inspector -->
+<aside class="fixed right-0 top-14 h-[calc(100%-3.5rem)] w-[300px] bg-zinc-900 border-l border-zinc-800 hidden xl:block p-4 custom-scrollbar overflow-y-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500">Asset Inspector</h2>
+  </div>
+  <div id="inspector-empty" class="flex flex-col items-center justify-center py-12 text-zinc-600">
+    <span class="material-symbols-outlined text-4xl mb-2">touch_app</span>
+    <p class="font-label-sm uppercase">Select an asset</p>
+  </div>
+  <div id="inspector-content" class="hidden space-y-4">
+    <div class="aspect-video bg-zinc-950 border border-zinc-800 flex items-center justify-center overflow-hidden mb-4">
+      <span class="material-symbols-outlined text-[64px] text-zinc-700">deployed_code</span>
+    </div>
+    <h3 id="ins-name" class="text-sm font-semibold mb-1 break-all"></h3>
+    <p id="ins-date" class="text-xs text-zinc-500"></p>
+    <div class="pt-6 grid grid-cols-2 gap-2">
+      <a id="ins-download" href="#" target="_blank" class="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white py-2 rounded text-xs transition-colors">
+        <span class="material-symbols-outlined text-sm">download</span>Source
+      </a>
+      <button id="ins-delete" class="flex items-center justify-center gap-2 bg-red-900/50 hover:bg-red-800 text-red-300 py-2 rounded text-xs transition-colors">
+        <span class="material-symbols-outlined text-sm">delete</span>Delete
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script type="module">
+  import { renderSidebar, authFetch, showToast } from "./js/app.js";
+  renderSidebar("assets.html");
+
+  const API_BASE  = window.FORGE3D_API_BASE || "http://localhost:5000/api";
+  let allAssets   = [];
+  let activeExt   = "";
+  let selectedId  = null;
+
+  // Load projects for filter dropdown
+  async function loadProjects() {
+    const { projects } = await authFetch("/projects?limit=200");
+    const sel = document.getElementById("project-filter");
+    projects.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.id; opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener("change", () => loadAssets(sel.value));
+    await loadAssets("");
+  }
+
+  async function loadAssets(projectId = "") {
+    const grid = document.getElementById("asset-grid");
+    grid.innerHTML = `<div class="col-span-full flex items-center justify-center py-16 text-zinc-600 font-label-sm"><span class="material-symbols-outlined animate-spin mr-2">progress_activity</span> Loading…</div>`;
+    try {
+      let assets = [];
+      if (projectId) {
+        const { assets: list } = await authFetch(`/projects/${projectId}/assets`);
+        assets = list;
+      } else {
+        const { projects } = await authFetch("/projects?limit=200");
+        const results = await Promise.all(projects.map(p => authFetch(`/projects/${p.id}/assets`).catch(() => ({ assets: [] }))));
+        assets = results.flatMap(r => r.assets);
+      }
+      allAssets = assets;
+      renderGrid();
+    } catch (err) {
+      grid.innerHTML = `<div class="col-span-full text-center py-16 text-red-400 font-label-sm">${err.message}</div>`;
+    }
+  }
+
+  function extOf(name) { const p = name.lastIndexOf("."); return p >= 0 ? name.slice(p).toLowerCase() : ""; }
+
+  function renderGrid() {
+    const q        = document.getElementById("search-input").value.toLowerCase();
+    const extList  = activeExt ? activeExt.split(",") : [];
+    const filtered = allAssets.filter(a => {
+      const matchQ   = !q || a.filename.toLowerCase().includes(q);
+      const matchExt = !extList.length || extList.includes(extOf(a.filename));
+      return matchQ && matchExt;
+    });
+
+    document.getElementById("asset-total").textContent = `${filtered.length} asset${filtered.length !== 1 ? "s" : ""}`;
+
+    const grid = document.getElementById("asset-grid");
+    if (!filtered.length) {
+      grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center py-16 text-zinc-600"><span class="material-symbols-outlined text-4xl mb-2">search_off</span><p class="font-label-sm">No assets found.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(a => `
+      <div class="asset-card group border border-zinc-800 bg-zinc-900 overflow-hidden flex flex-col hover:border-zinc-600 transition-all cursor-pointer" data-id="${a.id}" data-url="${a.file_url}" data-name="${a.filename}" data-date="${a.created_at}">
+        <div class="relative aspect-square bg-zinc-950 overflow-hidden flex items-center justify-center">
+          <span class="material-symbols-outlined text-zinc-700 text-[48px]">deployed_code</span>
+          <div class="absolute top-2 right-2">
+            <span class="bg-zinc-950/80 backdrop-blur text-[10px] px-2 py-0.5 border border-zinc-800 text-zinc-300">${extOf(a.filename).toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="p-3 bg-zinc-900 border-t border-zinc-800">
+          <h3 class="text-xs font-semibold truncate mb-1">${a.filename}</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] text-zinc-500">${new Date(a.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+      </div>`).join("");
+
+    grid.querySelectorAll(".asset-card").forEach(card => {
+      card.addEventListener("click", () => selectAsset(card.dataset));
+    });
+  }
+
+  function selectAsset({ id, url, name, date }) {
+    selectedId = id;
+    document.getElementById("inspector-empty").classList.add("hidden");
+    document.getElementById("inspector-content").classList.remove("hidden");
+    document.getElementById("ins-name").textContent = name;
+    document.getElementById("ins-date").textContent = `Uploaded ${new Date(date).toLocaleString()}`;
+    document.getElementById("ins-download").href = url;
+    document.getElementById("ins-delete").onclick = () => deleteSelected(id, name);
+  }
+
+  async function deleteSelected(id, name) {
+    if (!confirm(`Delete "${name}"?`)) return;
+    try {
+      await authFetch(`/assets/${id}`, { method: "DELETE" });
+      showToast("Asset deleted.", "success");
+      allAssets = allAssets.filter(a => a.id !== id);
+      document.getElementById("inspector-empty").classList.remove("hidden");
+      document.getElementById("inspector-content").classList.add("hidden");
+      renderGrid();
+    } catch (err) { showToast(err.message, "error"); }
+  }
+
+  // Filter buttons
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active","bg-zinc-800","text-white","border-zinc-700"));
+      btn.classList.add("active","bg-zinc-800","text-white","border-zinc-700");
+      activeExt = btn.dataset.ext;
+      renderGrid();
+    });
+  });
+
+  document.getElementById("search-input").addEventListener("input", renderGrid);
+
+  loadProjects();
+</script>
+</body>
+</html>

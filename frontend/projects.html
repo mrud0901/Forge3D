@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forge3D – Projects</title>
+<meta name="description" content="Manage all your Forge3D 3D asset production projects."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config={darkMode:"class",theme:{extend:{
+    colors:{"background":"#131313","on-surface":"#e5e2e1","outline-variant":"#424754","on-surface-variant":"#c2c6d6","surface-container":"#201f1f","surface-container-lowest":"#0e0e0e"},
+    spacing:{"md":"16px","xs":"4px","lg":"24px","xl":"32px","sm":"8px","sidebar_width":"260px"},
+    fontFamily:{"body-sm":["Inter"],"label-sm":["Inter"],"body-md":["Inter"],"label-md":["Inter"],"h1":["Inter"],"h2":["Inter"],"h3":["Inter"],"code":["monospace"]},
+    fontSize:{"body-sm":["13px",{"lineHeight":"18px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"500"}],"h1":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"600"}],"h2":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"h3":["16px",{"lineHeight":"24px","fontWeight":"600"}],"code":["12px",{"lineHeight":"16px","fontWeight":"400"}]}
+  }}}
+</script>
+<style>
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  body{background-color:#121212;color:#e5e2e1;font-family:'Inter',sans-serif;min-height:100dvh;}
+  .no-scrollbar::-webkit-scrollbar{display:none;} .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+</style>
+</head>
+<body class="font-body-md text-on-surface bg-background">
+
+<aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col w-[260px] bg-zinc-900 border-r border-zinc-800 z-50"></aside>
+
+<div class="pl-[260px] flex flex-col min-h-screen">
+  <header id="topbar" class="flex items-center justify-between px-6 h-14 bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40"></header>
+
+  <main class="flex-1 p-8 bg-[#121212]">
+    <!-- Header -->
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <h1 class="font-h1 text-h1 text-on-surface uppercase tracking-tight">Projects</h1>
+        <p class="font-body-sm text-body-sm text-zinc-500 mt-1 uppercase tracking-widest">Active Production Pipelines</p>
+      </div>
+      <button onclick="openCreateModal()" class="bg-blue-500 text-white h-8 px-6 font-inter text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-blue-600 transition-colors">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        Create Project
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-6">
+      <div class="relative max-w-md">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">search</span>
+        <input id="search-input" class="w-full bg-zinc-900 border border-zinc-800 pl-10 pr-4 py-2 text-xs focus:outline-none focus:border-blue-500 transition-all text-zinc-200 placeholder:text-zinc-600"
+          placeholder="Search projects…" type="text"/>
+      </div>
+    </div>
+
+    <!-- Projects grid -->
+    <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+      <div class="col-span-full flex items-center justify-center py-12 text-zinc-600 font-label-sm">
+        <span class="material-symbols-outlined animate-spin mr-2">progress_activity</span> Loading projects…
+      </div>
+    </div>
+
+    <!-- Recent batch exports table -->
+    <div class="mt-12">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-h2 text-on-surface uppercase tracking-tight">Recent Batch Exports</h2>
+      </div>
+      <div class="w-full border border-[#2D2D2D] bg-[#1E1E1E]">
+        <div class="grid grid-cols-5 px-6 py-3 border-b border-[#2D2D2D] font-label-sm text-label-sm text-zinc-500 uppercase tracking-widest">
+          <div class="col-span-2">Task Name</div><div>Status</div><div>Nodes</div><div class="text-right">Completion</div>
+        </div>
+        <div class="grid grid-cols-5 px-6 py-4 border-b border-[#2D2D2D] bg-[#121212] font-body-sm text-white items-center">
+          <div class="col-span-2 flex items-center gap-3"><span class="material-symbols-outlined text-zinc-500 text-sm">cloud_upload</span>District_Render_High_01</div>
+          <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Processing</div>
+          <div class="text-zinc-400">8/12 Active</div><div class="text-right font-code text-blue-400">74.2%</div>
+        </div>
+        <div class="grid grid-cols-5 px-6 py-4 font-body-sm text-white items-center">
+          <div class="col-span-2 flex items-center gap-3"><span class="material-symbols-outlined text-zinc-500 text-sm">check_circle</span>Mech_Interior_Final_B</div>
+          <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500"></div>Complete</div>
+          <div class="text-zinc-400">--</div><div class="text-right font-code text-zinc-500">100%</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- FAB -->
+<button onclick="openCreateModal()" class="fixed bottom-8 right-8 w-14 h-14 bg-blue-500 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+  <span class="material-symbols-outlined text-2xl">rocket_launch</span>
+</button>
+
+<!-- Create modal -->
+<div id="create-modal" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center">
+  <div class="bg-zinc-900 border border-zinc-800 p-xl w-full max-w-md shadow-2xl">
+    <h3 class="font-h2 text-on-surface mb-lg">New Project</h3>
+    <input id="project-name-input" class="w-full h-10 bg-zinc-950 border border-zinc-800 focus:border-blue-500 text-body-md px-md outline-none transition-colors mb-lg"
+      placeholder="e.g. Neo_Tokyo_V4" type="text"/>
+    <div class="flex gap-sm justify-end">
+      <button onclick="closeCreateModal()" class="px-lg py-xs border border-zinc-700 text-zinc-300 hover:bg-zinc-800 font-label-md transition-colors">Cancel</button>
+      <button id="create-btn" onclick="submitCreate()" class="px-lg py-xs bg-blue-500 text-white hover:bg-blue-600 font-label-md transition-colors">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div id="delete-modal" class="hidden fixed inset-0 z-[100] bg-black/60 flex items-center justify-center">
+  <div class="bg-zinc-900 border border-zinc-800 p-xl w-full max-w-md shadow-2xl">
+    <h3 class="font-h2 text-on-surface mb-sm">Delete Project</h3>
+    <p class="font-body-sm text-zinc-400 mb-lg">This will permanently delete <strong id="delete-project-name" class="text-white"></strong> and all its assets.</p>
+    <div class="flex gap-sm justify-end">
+      <button onclick="document.getElementById('delete-modal').classList.add('hidden')" class="px-lg py-xs border border-zinc-700 text-zinc-300 hover:bg-zinc-800 font-label-md transition-colors">Cancel</button>
+      <button id="delete-confirm-btn" class="px-lg py-xs bg-red-600 text-white hover:bg-red-700 font-label-md transition-colors">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { renderSidebar, renderTopbar, authFetch, showToast } from "./js/app.js";
+  renderSidebar("projects.html");
+  renderTopbar("Asset Manager");
+
+  let allProjects = [];
+
+  async function loadProjects() {
+    const grid = document.getElementById("projects-grid");
+    try {
+      const { projects } = await authFetch("/projects?limit=50");
+      allProjects = projects;
+      renderGrid(projects);
+    } catch (err) {
+      grid.innerHTML = `<div class="col-span-full text-center py-12 text-red-400 font-label-sm">${err.message}</div>`;
+    }
+  }
+
+  function renderGrid(projects) {
+    const grid = document.getElementById("projects-grid");
+    grid.innerHTML = "";
+
+    projects.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "bg-[#1E1E1E] border border-[#2D2D2D] group cursor-pointer hover:border-blue-500 transition-colors";
+      card.innerHTML = `
+        <div class="aspect-video relative overflow-hidden bg-[#121212] flex items-center justify-center">
+          <span class="material-symbols-outlined text-zinc-700 text-[64px]">deployed_code</span>
+          <div class="absolute top-2 right-2">
+            <span class="bg-blue-500 text-white px-2 py-0.5 font-label-sm text-label-sm">${p.asset_count || 0} files</span>
+          </div>
+        </div>
+        <div class="p-4 flex flex-col gap-2">
+          <div class="flex justify-between items-start">
+            <h3 class="font-h3 text-white uppercase tracking-tight truncate">${p.name}</h3>
+            <button data-id="${p.id}" data-name="${p.name}" class="delete-btn text-zinc-500 hover:text-red-400 transition-colors">
+              <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+          </div>
+          <div class="flex flex-col gap-1">
+            <div class="flex justify-between font-label-md text-label-md text-zinc-500">
+              <span class="uppercase">Created</span>
+              <span>${new Date(p.created_at).toLocaleDateString()}</span>
+            </div>
+            <div class="flex justify-between font-label-md text-label-md text-zinc-500 border-t border-[#2D2D2D] pt-1 mt-1">
+              <span class="uppercase">Assets</span>
+              <span>${p.asset_count || 0} FILES</span>
+            </div>
+          </div>
+        </div>`;
+
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".delete-btn")) return;
+        window.location.href = `viewer.html?project=${p.id}`;
+      });
+      grid.appendChild(card);
+    });
+
+    // Add "new project" placeholder
+    const addCard = document.createElement("div");
+    addCard.className = "bg-[#121212] border-2 border-dashed border-[#2D2D2D] flex flex-col items-center justify-center min-h-[180px] group cursor-pointer hover:border-blue-500 transition-all";
+    addCard.innerHTML = `
+      <span class="material-symbols-outlined text-zinc-500 group-hover:text-blue-500 transition-colors text-4xl mb-2">add_circle</span>
+      <span class="font-label-md text-label-md text-zinc-500 uppercase tracking-widest group-hover:text-white">New Project</span>`;
+    addCard.addEventListener("click", () => window.openCreateModal());
+    grid.appendChild(addCard);
+
+    // Delete buttons
+    grid.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const { id, name } = btn.dataset;
+        openDeleteModal(id, name);
+      });
+    });
+  }
+
+  // ── Search ─────────────────────────────────────────────────────────────────
+  document.getElementById("search-input").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase();
+    renderGrid(allProjects.filter(p => p.name.toLowerCase().includes(q)));
+  });
+
+  // ── Create modal ───────────────────────────────────────────────────────────
+  window.openCreateModal = () => {
+    document.getElementById("create-modal").classList.remove("hidden");
+    document.getElementById("project-name-input").focus();
+  };
+  window.closeCreateModal = () => {
+    document.getElementById("create-modal").classList.add("hidden");
+    document.getElementById("project-name-input").value = "";
+  };
+  window.submitCreate = async () => {
+    const name = document.getElementById("project-name-input").value.trim();
+    if (!name) return showToast("Project name is required.", "error");
+    const btn = document.getElementById("create-btn");
+    btn.disabled = true; btn.textContent = "Creating…";
+    try {
+      await authFetch("/projects", { method: "POST", body: JSON.stringify({ name }) });
+      showToast(`Project "${name}" created!`, "success");
+      window.closeCreateModal();
+      await loadProjects();
+    } catch (err) { showToast(err.message, "error"); }
+    finally { btn.disabled = false; btn.textContent = "Create"; }
+  };
+
+  // ── Delete modal ───────────────────────────────────────────────────────────
+  let _deleteId = null;
+  function openDeleteModal(id, name) {
+    _deleteId = id;
+    document.getElementById("delete-project-name").textContent = name;
+    document.getElementById("delete-modal").classList.remove("hidden");
+  }
+  document.getElementById("delete-confirm-btn").addEventListener("click", async () => {
+    if (!_deleteId) return;
+    const btn = document.getElementById("delete-confirm-btn");
+    btn.disabled = true; btn.textContent = "Deleting…";
+    try {
+      await authFetch(`/projects/${_deleteId}`, { method: "DELETE" });
+      showToast("Project deleted.", "success");
+      document.getElementById("delete-modal").classList.add("hidden");
+      await loadProjects();
+    } catch (err) { showToast(err.message, "error"); }
+    finally { btn.disabled = false; btn.textContent = "Delete"; }
+  });
+
+  // Close modals on backdrop
+  ["create-modal","delete-modal"].forEach(id => {
+    document.getElementById(id).addEventListener("click", e => { if (e.target === e.currentTarget) e.target.classList.add("hidden"); });
+  });
+  document.getElementById("project-name-input").addEventListener("keydown", e => { if (e.key === "Enter") window.submitCreate(); });
+
+  loadProjects();
+</script>
+</body>
+</html>

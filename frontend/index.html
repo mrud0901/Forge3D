@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forge3D – Industrial Grade Asset Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#c8c6c6",
+                        "surface-container-lowest": "#0e0e0e",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#2a2a2a",
+                        "tertiary-container": "#929090",
+                        "surface-bright": "#393939",
+                        "on-secondary-fixed": "#1b1b1c",
+                        "on-surface-variant": "#c2c6d6",
+                        "primary": "#adc6ff",
+                        "inverse-surface": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "surface-tint": "#adc6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary": "#002e6a",
+                        "surface-container": "#201f1f",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#004395",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-background": "#e5e2e1",
+                        "outline": "#8c909f",
+                        "secondary": "#c8c6c5",
+                        "surface-container-highest": "#353534",
+                        "inverse-primary": "#005ac2",
+                        "on-tertiary-container": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-fixed": "#e4e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary": "#303030",
+                        "on-primary-fixed": "#001a42",
+                        "outline-variant": "#424754",
+                        "background": "#131313",
+                        "on-secondary": "#303030",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#474746",
+                        "surface-dim": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#131313",
+                        "tertiary-fixed-dim": "#c8c6c6",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#1b1c1c",
+                        "on-secondary-container": "#b7b5b4",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary-container": "#4d8eff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "inspector_width": "300px",
+                        "lg": "24px",
+                        "sidebar_width": "260px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "code": ["monospace"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "h1": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "code": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h2": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "h3": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            min-height: max(884px, 100dvh);
+        }
+        .wireframe-grid {
+            background-image: radial-gradient(#2D2D2D 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased selection:bg-blue-500/30">
+<!-- TopAppBar Component -->
+<header class="bg-zinc-950 border-b border-zinc-800 fixed top-0 w-full z-50 shadow-none">
+  <div class="flex items-center justify-between px-6 h-16 w-full max-w-[1920px] mx-auto">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-blue-500" data-icon="deployed_code">deployed_code</span>
+      <span class="font-inter text-lg font-bold tracking-widest uppercase text-zinc-100">Forge3D</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="font-inter text-sm font-medium tracking-tight text-zinc-400 hover:text-blue-400 hover:bg-zinc-900/50 transition-all duration-200 px-2 py-1" href="dashboard.html">Explore</a>
+      <a class="font-inter text-sm font-medium tracking-tight text-zinc-400 hover:text-blue-400 hover:bg-zinc-900/50 transition-all duration-200 px-2 py-1" href="assets.html">Assets</a>
+      <a class="font-inter text-sm font-medium tracking-tight text-zinc-400 hover:text-blue-400 hover:bg-zinc-900/50 transition-all duration-200 px-2 py-1" href="#pipeline">Pipeline</a>
+      <a class="font-inter text-sm font-medium tracking-tight text-zinc-400 hover:text-blue-400 hover:bg-zinc-900/50 transition-all duration-200 px-2 py-1" href="https://github.com/shree/forge3D#readme">Documentation</a>
+    </nav>
+    <a href="login.html" class="inline-flex items-center justify-center bg-blue-500 text-on-primary font-label-md px-4 py-2 hover:bg-blue-400 transition-colors active:scale-95">
+      Launch App
+    </a>
+  </div>
+</header>
+
+<main class="pt-16">
+  <!-- Hero Section -->
+  <section id="explore" class="relative overflow-hidden pt-24 pb-16 px-6 border-b border-zinc-800">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+      <div class="flex-1 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-high border border-outline-variant rounded-none">
+          <span class="w-2 h-2 bg-blue-500 animate-pulse"></span>
+          <span class="font-label-sm text-primary uppercase">v2.4.0 Engine Live</span>
+        </div>
+        <h1 class="font-h1 text-6xl leading-[1.1] font-extrabold tracking-tighter text-zinc-100">
+            The Professional <br/><span class="text-blue-500">Pipeline</span> for 3D Assets.
+        </h1>
+        <p class="font-body-lg text-on-surface-variant max-w-xl">
+            Industrial grade asset management for technical directors and 3D artists. Synchronize, version, and deploy high-poly assets across global DCC environments.
+        </p>
+        <div class="flex items-center gap-4 pt-4">
+          <a href="signup.html" class="inline-flex items-center justify-center bg-blue-500 text-white font-label-md h-12 px-8 hover:bg-blue-400 transition-all active:scale-95">
+            Get Started
+          </a>
+          <a href="#" class="inline-flex items-center justify-center border border-outline-variant text-zinc-100 font-label-md h-12 px-8 hover:bg-zinc-900 transition-all active:scale-95">
+            View Documentation
+          </a>
+        </div>
+      </div>
+      <div class="flex-1 w-full relative">
+        <div class="aspect-square bg-surface-container-high border border-zinc-800 relative p-4 wireframe-grid">
+          <img alt="3D Visualization" class="w-full h-full object-cover mix-blend-screen opacity-80" data-alt="Technical 3D wireframe of a complex industrial turbine engine with blue glowing highlights on a dark charcoal grid background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApVNKraSVKe3WkZavlqShTpjlSimXhjsKOqbjE4q34YLN8H81rJb_feilEN-J4_gwQAb7QxdHr4IWrkF8J7Q9OKb5t7r4ITXYzm4e1XkHmH0TV5pwHU7PSSmbj1MnQnJsAv23hY99NO6y6bUQn59iqskIPeX-uGJG_7GjRq4hN1J6AYWU81KqhLEmdyuvdsZgIzS1VJXCQnxj0k-CRud23-1Ka1sLoYutAcGjfP3afDXhU3Xti0n1OGcRXx6d_n-5V9UQcGCfwHg"/>
+          <div class="absolute bottom-6 left-6 right-6 bg-zinc-900/90 border border-zinc-700 p-4 backdrop-blur-md">
+            <div class="flex justify-between items-center mb-2">
+              <span class="font-code text-zinc-400 uppercase tracking-widest">Model: Turbine_Final_v08</span>
+              <span class="font-code text-blue-500">LIVE RENDER</span>
+            </div>
+            <div class="h-1 bg-zinc-800 w-full">
+              <div class="h-full bg-blue-500 w-3/4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Section -->
+  <section class="py-12 bg-zinc-950 border-b border-zinc-800 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 opacity-50 grayscale">
+      <span class="font-h3 text-zinc-500 uppercase tracking-[0.2em]">Built for Studios</span>
+      <div class="flex flex-wrap justify-center gap-12 md:gap-16">
+        <div class="flex items-center gap-2 font-bold text-xl text-zinc-100"><span class="material-symbols-outlined" data-icon="token">token</span> VERTEX</div>
+        <div class="flex items-center gap-2 font-bold text-xl text-zinc-100"><span class="material-symbols-outlined" data-icon="polymer">polymer</span> LUMINA</div>
+        <div class="flex items-center gap-2 font-bold text-xl text-zinc-100"><span class="material-symbols-outlined" data-icon="architecture">architecture</span> KINETIC</div>
+        <div class="flex items-center gap-2 font-bold text-xl text-zinc-100"><span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span> FORGE</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Bento Grid -->
+  <section id="pipeline" class="py-24 px-6 bg-surface">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16">
+        <h2 class="font-h1 text-4xl mb-4 text-zinc-100">Engineered for Precision</h2>
+        <p class="font-body-md text-on-surface-variant max-w-2xl">Standardize your production flow with tools designed for the rigorous demands of modern 3D pipelines.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <!-- Feature 1: Collaboration -->
+        <div class="md:col-span-8 bg-surface-container border border-outline-variant p-8 relative group overflow-hidden">
+          <div class="relative z-10">
+            <span class="material-symbols-outlined text-blue-500 mb-4 text-3xl" data-icon="groups">groups</span>
+            <h3 class="font-h2 text-2xl text-zinc-100 mb-2">Real-time Collaboration</h3>
+            <p class="font-body-md text-on-surface-variant max-w-md">Multi-user workspace syncing. Artists across the globe see updates to the main branch instantly without manual pushes.</p>
+          </div>
+          <div class="absolute right-0 bottom-0 w-1/2 h-full opacity-20 group-hover:opacity-40 transition-opacity">
+            <img alt="Collab UI" class="w-full h-full object-cover" data-alt="Digital collaborative interface showing multiple user cursors and data nodes connecting in a dark network" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmmJ0jGNjf0FG0dw2-PJzZNlefkI7wjajNEaHYukhjZVup7N9S4sIf62D1IFiHtTqtuCc3NDy0n41b9mWbLTn8B2_pVX4zeZF6PDyDXlz2MBdAzAA987gdfULM4NOTi_g4mqV7TvJ15qnRWbwV-cxlR77370zXx5eD0xejvjkAdB-_yZfS49AH5v1T9y8BnJ580g-nI-nVK3GptHMlWpaJMubmUFNTDoL2wI5tIPU1_87VraeVbm4dV0mooyfvttF6idXk9-rVaw"/>
+          </div>
+        </div>
+        <!-- Feature 2: Universal Support -->
+        <div class="md:col-span-4 bg-surface-container border border-outline-variant p-8">
+          <span class="material-symbols-outlined text-blue-500 mb-4 text-3xl" data-icon="extension">extension</span>
+          <h3 class="font-h3 text-xl text-zinc-100 mb-2">Universal Support</h3>
+          <p class="font-body-sm text-on-surface-variant mb-6">Native integration for industry standard formats.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="bg-zinc-950 border border-zinc-800 text-blue-400 font-code px-2 py-1 text-xs">.USDZ</span>
+            <span class="bg-zinc-950 border border-zinc-800 text-blue-400 font-code px-2 py-1 text-xs">.GLB</span>
+            <span class="bg-zinc-950 border border-zinc-800 text-blue-400 font-code px-2 py-1 text-xs">.OBJ</span>
+            <span class="bg-zinc-950 border border-zinc-800 text-blue-400 font-code px-2 py-1 text-xs">.FBX</span>
+          </div>
+        </div>
+        <!-- Feature 3: Version Control -->
+        <div class="md:col-span-4 bg-surface-container border border-outline-variant p-8">
+          <span class="material-symbols-outlined text-blue-500 mb-4 text-3xl" data-icon="history">history</span>
+          <h3 class="font-h3 text-xl text-zinc-100 mb-2">Version Control</h3>
+          <p class="font-body-sm text-on-surface-variant">Deterministic history for every polygon. Revert to any state in the timeline with zero data loss.</p>
+        </div>
+        <!-- Feature 4: Cloud Engine -->
+        <div class="md:col-span-8 bg-surface-container border border-outline-variant p-8 flex flex-col md:flex-row items-center gap-8">
+          <div class="flex-1">
+            <span class="material-symbols-outlined text-blue-500 mb-4 text-3xl" data-icon="cloud_done">cloud_done</span>
+            <h3 class="font-h3 text-xl text-zinc-100 mb-2">Enterprise Infrastructure</h3>
+            <p class="font-body-sm text-on-surface-variant">Redundant cloud storage with localized edge caching for sub-100ms asset retrieval during production.</p>
+          </div>
+          <div class="flex-1 w-full bg-zinc-950 p-4 border border-zinc-800">
+            <div class="space-y-3">
+              <div class="flex justify-between items-center text-xs font-code">
+                <span class="text-zinc-500">Latency</span>
+                <span class="text-green-500">12ms</span>
+              </div>
+              <div class="h-1 bg-zinc-800"><div class="h-full bg-blue-500 w-[12%]"></div></div>
+              <div class="flex justify-between items-center text-xs font-code">
+                <span class="text-zinc-500">Bandwidth</span>
+                <span class="text-zinc-300">1.2 GB/s</span>
+              </div>
+              <div class="h-1 bg-zinc-800"><div class="h-full bg-blue-500 w-[85%]"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Showcase: Viewer Section -->
+  <section id="assets" class="py-24 px-6 border-t border-zinc-800">
+    <div class="max-w-7xl mx-auto">
+      <div class="bg-zinc-950 border border-zinc-800 overflow-hidden">
+        <div class="flex items-center justify-between border-b border-zinc-800 px-4 h-10 bg-zinc-900/50">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+            <div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+            <div class="w-2 h-2 rounded-full bg-zinc-700"></div>
+            <span class="ml-4 font-code text-[10px] text-zinc-500 uppercase tracking-widest">Asset_Viewer_Main_Viewport.exe</span>
+          </div>
+          <div class="flex gap-4">
+            <span class="material-symbols-outlined text-zinc-500 text-sm" data-icon="minimize">minimize</span>
+            <span class="material-symbols-outlined text-zinc-500 text-sm" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+            <span class="material-symbols-outlined text-zinc-500 text-sm" data-icon="close">close</span>
+          </div>
+        </div>
+        <div class="flex h-[600px]">
+          <!-- Left Panel -->
+          <div class="w-sidebar_width border-r border-zinc-800 flex flex-col hidden lg:flex">
+            <div class="p-4 border-b border-zinc-800">
+              <span class="font-label-sm text-zinc-500 uppercase">Scene Explorer</span>
+            </div>
+            <div class="flex-1 overflow-y-auto p-2 space-y-1">
+              <div class="flex items-center gap-2 p-2 bg-blue-500/10 border-l-2 border-blue-500 text-blue-500">
+                <span class="material-symbols-outlined text-sm" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+                <span class="font-code text-xs">Root_Assembly</span>
+              </div>
+              <div class="flex items-center gap-2 p-2 pl-6 hover:bg-zinc-900 text-zinc-400 cursor-pointer">
+                <span class="material-symbols-outlined text-sm" data-icon="keyboard_arrow_right">keyboard_arrow_right</span>
+                <span class="font-code text-xs">Propulsion_System</span>
+              </div>
+              <div class="flex items-center gap-2 p-2 pl-10 hover:bg-zinc-900 text-zinc-400 cursor-pointer">
+                <span class="material-symbols-outlined text-sm" data-icon="layers">layers</span>
+                <span class="font-code text-xs">Fan_Blade_A_01</span>
+              </div>
+              <div class="flex items-center gap-2 p-2 pl-10 hover:bg-zinc-900 text-zinc-400 cursor-pointer">
+                <span class="material-symbols-outlined text-sm" data-icon="layers">layers</span>
+                <span class="font-code text-xs">Fan_Blade_A_02</span>
+              </div>
+            </div>
+          </div>
+          <!-- Viewport Content -->
+          <div class="flex-1 relative wireframe-grid flex items-center justify-center">
+            <img alt="Asset View" class="max-w-[80%] max-h-[80%] object-contain" data-alt="Detailed 3D mechanical model of a futuristic robotic hand in a dark studio environment with dramatic blue top lighting and visible wireframe overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKHDjYiQqkPi6k5S-zXDN21RQB8dxXjUdPRAhapMUUoUAHas3ib83sDf6LGIeNsA7QFrxauW7kAnBm0In5reSNPSWJwEKAbgGLA9Y8pDNL1Hur5IAztF8q-Bj5qc4AW9Q5fEmbJCTlBiOGkbLqh9vUKT1ihQQCSEbhUllIweP6729u7KgdrTVcawmu8y2TlmcjkwvC0rkzjck_UNVTgKCk3NTK6dSVJA2JVF988K1Di5LLVJCMC1XP0Z4EM81Oxfbi0GP6zYkSoA"/>
+            <!-- Floating Tools -->
+            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-zinc-900/90 border border-zinc-700 p-1 backdrop-blur">
+              <button class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-blue-500 hover:bg-zinc-800"><span class="material-symbols-outlined" data-icon="select_all">select_all</span></button>
+              <button class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-blue-500 hover:bg-zinc-800"><span class="material-symbols-outlined" data-icon="open_with">open_with</span></button>
+              <button class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-blue-500 hover:bg-zinc-800"><span class="material-symbols-outlined" data-icon="rotate_right">rotate_right</span></button>
+              <div class="w-px h-6 bg-zinc-800 mx-1"></div>
+              <button class="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-blue-500 hover:bg-zinc-800"><span class="material-symbols-outlined" data-icon="grid_4x4">grid_4x4</span></button>
+              <button class="w-10 h-10 flex items-center justify-center text-blue-500 bg-zinc-800"><span class="material-symbols-outlined" data-icon="polyline" style="font-variation-settings: 'FILL' 1;">polyline</span></button>
+            </div>
+          </div>
+          <!-- Inspector Panel -->
+          <div class="w-inspector_width border-l border-zinc-800 hidden xl:flex flex-col bg-zinc-950">
+            <div class="p-4 border-b border-zinc-800">
+              <span class="font-label-sm text-zinc-500 uppercase">Properties</span>
+            </div>
+            <div class="p-4 space-y-4">
+              <div class="space-y-1">
+                <label class="font-label-md text-zinc-500">Transform: Position</label>
+                <div class="grid grid-cols-3 gap-2">
+                  <div class="bg-zinc-900 border border-zinc-800 p-1 text-center font-code text-xs">X: 0.00</div>
+                  <div class="bg-zinc-900 border border-zinc-800 p-1 text-center font-code text-xs">Y: 12.4</div>
+                  <div class="bg-zinc-900 border border-zinc-800 p-1 text-center font-code text-xs">Z: -4.2</div>
+                </div>
+              </div>
+              <div class="space-y-1 pt-2 border-t border-zinc-900">
+                <label class="font-label-md text-zinc-500">Materials</label>
+                <div class="flex items-center gap-3 p-2 bg-zinc-900 border border-zinc-800">
+                  <div class="w-8 h-8 bg-zinc-600 rounded-sm"></div>
+                  <span class="font-code text-xs">Anodized_Titanium_Mat</span>
+                </div>
+              </div>
+              <div class="space-y-1 pt-2 border-t border-zinc-900">
+                <label class="font-label-md text-zinc-500">Visibility</label>
+                <div class="flex items-center justify-between">
+                  <span class="font-body-sm text-zinc-300">Wireframe Overlay</span>
+                  <div class="w-8 h-4 bg-blue-500 relative rounded-full">
+                    <div class="absolute right-1 top-1 w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final Call to Action -->
+  <section class="py-24 px-6 bg-zinc-950 text-center border-b border-zinc-800">
+    <div class="max-w-2xl mx-auto space-y-8">
+      <h2 class="font-h1 text-5xl font-extrabold tracking-tight">Ready to optimize your <span class="text-blue-500">3D workflow</span>?</h2>
+      <p class="font-body-lg text-zinc-500">Join over 450 global studios standardizing their assets on the Forge3D backbone.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="signup.html" class="inline-flex items-center justify-center w-full sm:w-auto bg-blue-500 text-white font-label-md h-14 px-12 hover:bg-blue-400 transition-all active:scale-95 text-lg">
+            Start Your Free Trial
+        </a>
+        <a href="#" class="inline-flex items-center justify-center w-full sm:w-auto border border-zinc-800 text-zinc-300 font-label-md h-14 px-12 hover:bg-zinc-900 transition-all active:scale-95 text-lg">
+            Contact Sales
+        </a>
+      </div>
+      <p class="font-code text-xs text-zinc-600">Enterprise deployment available for on-premise environments.</p>
+    </div>
+  </section>
+</main>
+
+<!-- Footer Component -->
+<footer class="bg-zinc-950 border-t border-zinc-800 w-full mt-auto">
+  <div class="flex flex-col md:flex-row justify-between items-center px-8 py-12 gap-8 max-w-7xl mx-auto">
+    <div class="flex flex-col gap-4">
+      <div class="font-inter text-sm font-bold text-zinc-100">Forge3D</div>
+      <p class="font-inter text-xs font-light text-zinc-500 max-w-xs">
+          © 2026 Forge3D. Industrial Grade Asset Management. Precise digital assets for mission-critical production.
+      </p>
+    </div>
+    <div class="flex gap-8">
+      <a class="font-inter text-xs font-light text-zinc-500 hover:text-zinc-100 transition-colors underline decoration-blue-500 underline-offset-4" href="#">Security</a>
+      <a class="font-inter text-xs font-light text-zinc-500 hover:text-zinc-100 transition-colors underline decoration-blue-500 underline-offset-4" href="#">Terms</a>
+      <a class="font-inter text-xs font-light text-zinc-500 hover:text-zinc-100 transition-colors underline decoration-blue-500 underline-offset-4" href="#">Privacy</a>
+    </div>
+    <div class="flex items-center gap-6 opacity-100 hover:opacity-80 transition-all">
+      <span class="material-symbols-outlined text-zinc-500 cursor-pointer" data-icon="language">language</span>
+      <span class="material-symbols-outlined text-zinc-500 cursor-pointer" data-icon="monitoring">monitoring</span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
