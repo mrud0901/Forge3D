@@ -153,7 +153,8 @@
     window.location.href = "dashboard.html";
   }
 
-  const API_BASE = window.FORGE3D_API_BASE || "http://localhost:5000/api";
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const API_BASE = window.FORGE3D_API_BASE || (isLocal ? "http://localhost:5000/api" : "/api");
   const form     = document.getElementById("login-form");
   const btn      = document.getElementById("login-btn");
   const btnText  = document.getElementById("btn-text");
