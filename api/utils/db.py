@@ -11,7 +11,7 @@ from contextlib import contextmanager
 
 # ── Connection Pool ───────────────────────────────────────────────────────────
 # Kept small for Vercel serverless (new function instance per request)
-_pool: psycopg2.pool.SimpleConnectionPool | None = None
+_pool = None  # type: psycopg2.pool.SimpleConnectionPool | None
 
 
 def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
@@ -23,7 +23,8 @@ def _get_pool() -> psycopg2.pool.SimpleConnectionPool:
 
         # Supabase requires sslmode=require
         if "sslmode" not in database_url:
-            database_url += "?sslmode=require"
+            separator = "&" if "?" in database_url else "?"
+            database_url += f"{separator}sslmode=require"
 
         _pool = psycopg2.pool.SimpleConnectionPool(
             minconn=1,

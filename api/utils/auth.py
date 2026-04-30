@@ -12,7 +12,10 @@ from flask import request, jsonify, g
 # ── Config ────────────────────────────────────────────────────────────────────
 JWT_SECRET = os.getenv("JWT_SECRET", "forge3d_change_me_in_production")
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRY_HOURS = int(os.getenv("JWT_EXPIRY_HOURS", 24))
+try:
+    JWT_EXPIRY_HOURS = int(os.getenv("JWT_EXPIRY_HOURS", 24))
+except (ValueError, TypeError):
+    JWT_EXPIRY_HOURS = 24
 
 
 # ── Token Generation ──────────────────────────────────────────────────────────

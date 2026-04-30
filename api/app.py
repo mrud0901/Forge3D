@@ -9,6 +9,12 @@ load_dotenv()  # Load .env before anything else
 from flask import Flask, jsonify
 from flask_cors import CORS
 import os
+import sys
+
+# Ensure the 'api' directory or current dir is in the path for module resolution
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
 
 from routes.auth_routes import auth_bp
 from routes.project_routes import project_bp
